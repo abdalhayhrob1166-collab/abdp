@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تحميل تطبيقات APK - abdalhay</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; background-color: #f4f4f9; padding: 50px; }
+        .container { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); display: inline-block; min-width: 300px; }
+        h1 { color: #333; }
+        ul { list-style: none; padding: 0; }
+        li { margin: 15px 0; padding: 10px; border-bottom: 1px solid #eee; }
+        a { text-decoration: none; color: white; background: #28a745; padding: 10px 20px; border-radius: 5px; font-weight: bold; }
+        a:hover { background: #218838; }
+        .file-name { display: block; margin-bottom: 10px; font-size: 1.1em; color: #555; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>مستودع تطبيقات APK</h1>
+        <p>قائمة الملفات المتوفرة للتحميل المباشر:</p>
+        <ul id="apk-list">جاري تحميل الملفات...</ul>
+    </div>
+
+    <script>
+        // ضع اسم المستخدم الخاص بك هنا واسم المستودع
+        const username = 'اسم_المستخدم_الخاص_بك'; 
+        const repo = 'abdalhay';
+
+        async function fetchApks() {
+            const url = `https://api.github.com/repos/${username}/${repo}/contents/`;
+            try {
+                const response = await fetch(url);
+                const files = await response.json();
+                const listElement = document.getElementById('apk-list');
+                listElement.innerHTML = ''; // مسح رسالة التحميل
+
+                // تصفية الملفات التي تنتهي بـ .apk فقط
+                const apkFiles = files.filter(file => file.name.endsWith('.apk'));
+
+                if (apkFiles.length === 0) {
+                    listElement.innerHTML = '<li>لا توجد ملفات APK حالياً.</li>';
+                    return;
+                }
+
+                apkFiles.forEach(file => {
+                    const li = document.createElement('li');
+                    // استخدام download_url للحصول على رابط مباشر
+                    li.innerHTML = `
+                        <span class="file-name">${file.name}</span>
+                        <a href="${file.download_url}" download>تحميل مباشر</a>
+                    `;
+                    listElement.appendChild(li);
+                });
+            } catch (error) {
+                console.error('حدث خطأ في جلب الملفات:', error);
+                document.getElementById('apk-list').innerHTML = '<li>حدث خطأ أثناء تحميل القائمة.</li>';
+            }
+        }
+
+        fetchApks();
+    </script>
+</body>
+</html>
